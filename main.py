@@ -10,7 +10,7 @@ import json
 
 ##### GLOBAL INPUT VARIABLES ####
 JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_scripts\\json_files\\temp'
-PIORESULTS_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\db-filler\\generated_scripts\\OUTPUT_results\\'
+PIORESULTS_DIR = 'C:\\db-filler\\generated_scripts\\OUTPUT_results\\'
 WATCH_DIR = PIORESULTS_DIR
 #SENTJSON_FOLDER = WATCH_DIR + 'sent_jsons\\'
 URL_DB = 'http://5.79.87.151/app_dev.php/'
