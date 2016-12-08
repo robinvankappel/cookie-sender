@@ -46,11 +46,12 @@ class MyHandler(PatternMatchingEventHandler):
         print 'Waiting till file write is finished...'
         try:
             util.FileWriteIsDone(file)
+            print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
                 json_content_dict = process.create_json(file)
                 json_content = json.dumps(json_content_dict)
-            elif WATCH_DIR == PIORESULTS_DIR:
+            elif WATCH_DIR == JSON_DIR:
                 #compress json file and send
                 json_content = open(file, 'rb').read()
             else:

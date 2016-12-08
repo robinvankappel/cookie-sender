@@ -55,20 +55,21 @@ def send_json(json_content,url_db):
         exit(1)
     return response
 
-def FileWriteIsDone(path, timeout=999):
+def FileWriteIsDone(path, filesize=None, timeout=999):
     sys.stdout.write('\r'+str(timeout))
     sys.stdout.flush()
     if (timeout <= 0):
         return False
-    #a = win32gui.FindWindow(None, 'C:\Windows\system32\cmd.exe')
-    #print(a, os.path.isfile(path))
-    #check whether file exists and is not empty
-    if (os.path.isfile(path) and ('KEYS END' in open(path).read())):
-        print 'File write finished'
-        return True;
+    if (os.path.isfile(path)):
+        filesize_new = os.stat(path).st_size
+        if (filesize_new == filesize) and (filesize > 10000):
+            return True;
+        else:
+            time.sleep(1)
+            return FileWriteIsDone(path, filesize_new, timeout - 1)
     else:
         time.sleep(1)
-        return FileWriteIsDone(path,timeout - 1)
+        return FileWriteIsDone(path,filesize,timeout - 1)
 
 class Result():
     """

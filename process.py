@@ -7,8 +7,11 @@ def create_json(pio_results_file):
     json_content = dict()
     flop = os.path.basename(pio_results_file)[0:5]
     with open(pio_results_file,'r+') as f:
-        file = f.read()
+        #todo: read line by line and save to python object
+        print util.get_time(),'reading pio results file'
+        file = f.readlines()
         #get results, keys and metadata from file
+        print util.get_time(),"get results, keys and metadata from file"
         pio_results,keys,pot_type,bet_size = splitfile(file)
         # check whether number of keys and results are equal
         if (len(keys) == len(pio_results)) == False:
@@ -16,10 +19,12 @@ def create_json(pio_results_file):
             exit(1)
         #make object of result-key combination
         results = list()
+        print util.get_time(), "make object of result-key combination"
         for i,pio_result in enumerate(pio_results):
             key = keys[i]
             results.append(util.Result(pio_result,key))
         # process results per key
+        print util.get_time(), "process results per key..."
         for result in results:
             result_per_hand = result.pio_result.split('\n')
             #get json content
@@ -29,6 +34,7 @@ def create_json(pio_results_file):
             #add to json
             json_content[full_key_corr] = json_content_of_key
     f.closed
+    print util.get_time(), "json_content generated"
     return json_content
 
 def get_json_from_result(result_per_hand):
@@ -81,6 +87,7 @@ def build_json(file,actions,end_of_file_index):
 
 def splitfile(file):
     splitfile = file.split("free_tree ok!")
+    #todo: not present anymore in result file, use other identifier.
     pio_results = splitfile[0].split("stdoutredi_append ok!")[1:]
     keys = splitfile[1] \
                .split('KEYS START')[1] \
