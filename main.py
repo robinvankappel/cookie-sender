@@ -10,7 +10,7 @@ import json
 
 ##### GLOBAL INPUT VARIABLES ####
 JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_scripts\\json_files\\temp'
-PIORESULTS_DIR = 'C:\\db-filler\\generated_scripts\\OUTPUT_results\\'
+PIORESULTS_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\db-filler\\generated_scripts\\OUTPUT_results\\'
 WATCH_DIR = PIORESULTS_DIR
 #SENTJSON_FOLDER = WATCH_DIR + 'sent_jsons\\'
 URL_DB = 'http://5.79.87.151/app_dev.php/'
@@ -45,11 +45,11 @@ class MyHandler(PatternMatchingEventHandler):
     def on_finished(self,file):
         print 'Waiting till file write is finished...'
         try:
-            util.FileWriteIsDone(file)
+            output = util.FileWriteIsDone(file)
             print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
-                json_content_dict = process.create_json(file)
+                json_content_dict = process.create_json(output,file)
                 json_content = json.dumps(json_content_dict)
             elif WATCH_DIR == JSON_DIR:
                 #compress json file and send
@@ -58,7 +58,9 @@ class MyHandler(PatternMatchingEventHandler):
                 print 'ERROR: WATCH_DIR wrongly defined'
                 exit(1)
             compressed_file = util.compress(json_content)
-            util.send_file(compressed_file, URL_DB_UPLOAD)
+            print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
+            #util.send_file(compressed_file, URL_DB_UPLOAD)
+            time.sleep(5)#fake send file time
         except:
             'Failed to process flop'
 
@@ -69,7 +71,8 @@ if __name__ == "__main__":
         print 'wrong path definition'
         exit(1)
     observer = Observer()
-    observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)#arg in cmd: python main.py C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
     observer.start()
     print 'watcher started'
 

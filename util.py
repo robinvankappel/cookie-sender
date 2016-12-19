@@ -18,8 +18,7 @@ def send_file(file,url_db_upload):
     req = urllib2.Request(url)
     #req.add_header('content-type', 'multipart/form-data')
     try:
-        print 'filesize = ' + str(round(file.__sizeof__() / 1000000.0,1)) + 'MB'
-        print 'start sending to url'
+        print get_time() + 'start sending to url'
         response = urllib2.urlopen(req, file)
     except urllib2.HTTPError as e:
         #print e.code
@@ -33,7 +32,7 @@ def send_file(file,url_db_upload):
     return response
 
 def compress(data):
-    print 'start compressing'
+    print get_time() + 'start compressing'
     compressed_file = bz2.compress(data)
     print get_time() + 'finalised compressing'
     return compressed_file
@@ -63,7 +62,15 @@ def FileWriteIsDone(path, filesize=None, timeout=999):
     if (os.path.isfile(path)):
         filesize_new = os.stat(path).st_size
         if (filesize_new == filesize) and (filesize > 10000):
-            return True;
+            with open(path, 'r+') as f:
+                file = f.read()
+                if 'END_OF_FILE' in file:
+                    f.closed
+                    print get_time() + 'file succesfully read'
+                    return file;
+                else:
+                    time.sleep(1)
+                    return FileWriteIsDone(path, filesize_new, timeout - 1)
         else:
             time.sleep(1)
             return FileWriteIsDone(path, filesize_new, timeout - 1)
