@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     # use this line when you run this program via cmd:
     # #arg in cmd: python main.py 'dir to watch'
-    # e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
+    # e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
     observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
 
     observer.start()

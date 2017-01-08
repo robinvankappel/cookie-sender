@@ -1,6 +1,4 @@
 import time
-import urllib2
-import json
 import bz2
 import sys
 import os

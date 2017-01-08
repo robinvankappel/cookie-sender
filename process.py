@@ -1,5 +1,4 @@
 import urllib2
-import json
 import util
 import os
 
