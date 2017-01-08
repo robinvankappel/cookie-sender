@@ -53,17 +53,18 @@ class MyHandler(PatternMatchingEventHandler):
                 json_content_dict = process.create_json(output,file)
                 json_content = json.dumps(json_content_dict)
             elif WATCH_DIR == JSON_DIR:
-                #compress json file and send
+
                 json_content = open(file, 'rb').read()
             else:
                 print 'ERROR: WATCH_DIR wrongly defined'
                 exit(1)
+            # compress json file and send
             compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
             process.send_json(compressed_file, URL_DB_UPLOAD, file, PIORESULTS_DIR, LOG_FILE)
+            # remove file
             print util.get_time(),'removing file'
             os.remove(file)
-            time.sleep(5)#fake send file time
         except:
             'Failed to process flop'
 
@@ -75,8 +76,14 @@ if __name__ == "__main__":
         print 'wrong path definition'
         exit(1)
     observer = Observer()
-    observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
-    #observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)#arg in cmd: python main.py C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
+    # use this line when you run this program from pycharm
+    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+
+    # use this line when you run this program via cmd:
+    # #arg in cmd: python main.py 'dir to watch'
+    # e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
+    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
+
     observer.start()
     print 'watcher started'
 

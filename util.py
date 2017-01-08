@@ -13,24 +13,6 @@ def get_time():
     time_str = '+'+str(int(time_new/60.0))+'min (' + str(int(time_new)) + 'sec)'
     return time_str
 
-def send_file(file,url_db_upload):
-    url = url_db_upload
-    req = urllib2.Request(url)
-    #req.add_header('content-type', 'multipart/form-data')
-    try:
-        print get_time() + 'start sending to url'
-        response = urllib2.urlopen(req, file)
-    except urllib2.HTTPError as e:
-        #print e.code
-        #print e.read()
-        print 'exit program'
-        exit()
-    except:
-        print 'failed to send file'
-        print 'exit program'
-        exit(1)
-    return response
-
 def compress(data):
     print get_time() + ' start compressing'
     compressed_file = bz2.compress(data)
@@ -69,10 +51,6 @@ class Result():
         self.pio_result = pio_result
         self.key = key
 
-def key2fullkey(flopname, key, pot_type, bet_size):
-    full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
-    return full_key
-
 def log_to_file(file,log_path,response=None):
     if response.code == 201:#successfull
         success = 1
@@ -86,12 +64,12 @@ def log_to_file(file,log_path,response=None):
     with open(log_path, 'a') as f:
         if success == 0:
             if not response == None:
-                content = file + ' (failed sending to db)\n'
-                content += 'response: ' + response.read()
+                content = file + ' (failed sending to db)' + get_time() +'\n'
+                content += 'response: ' + response.read() + '\n\n'
             else:
-                content = file + ' (failed sending to db)\n'
+                content = file + ' (failed sending to db)' + get_time() +'\n'
         elif success == 1:
-            content = file + ' (successfully sent to db)\n'
+            content = file + ' (successfully sent to db)' + get_time() +'\n'
         print content
         f.write(content)
     return

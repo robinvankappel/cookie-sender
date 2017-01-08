@@ -29,7 +29,7 @@ def create_json(output,file):
         #get json content
         json_content_of_key = get_json_from_result(result_per_hand)
         # generate full key
-        full_key_corr = util.key2fullkey(flop, result.key, pot_type, bet_size)
+        full_key_corr = key2fullkey(flop, result.key, pot_type, bet_size)
         #add to json
         json_content[full_key_corr] = json_content_of_key
 
@@ -123,7 +123,6 @@ def send_json(json_content,url,file,log_dir,log_name):
     req = urllib2.Request(url)
     req.add_header('content-type', 'application/json')
     #JSON_CHUNKS = 1000
-    #json_dump = json.dumps(json_content)
     log_path = log_dir + log_name
     try:
         #for k, v in islice(json_content.iteritems(), JSON_CHUNKS):
@@ -137,3 +136,7 @@ def send_json(json_content,url,file,log_dir,log_name):
         exit(1)
     util.log_to_file(file, log_path, response)
     return response
+
+def key2fullkey(flopname, key, pot_type, bet_size):
+    full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
+    return full_key
