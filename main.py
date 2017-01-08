@@ -13,8 +13,9 @@ JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_s
 PIORESULTS_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\db-filler\\generated_scripts\\OUTPUT_results\\'
 WATCH_DIR = PIORESULTS_DIR
 #SENTJSON_FOLDER = WATCH_DIR + 'sent_jsons\\'
-URL_DB = 'http://5.79.87.151/app_dev.php/'
+URL_DB = 'http://5.79.86.66/app_dev.php/'
 URL_DB_UPLOAD = URL_DB + 'upload'
+LOG_FILE = 'log_watcher.txt'
 
 ##### GLOBAL VARIABLES (don't change) ####
 
@@ -57,22 +58,25 @@ class MyHandler(PatternMatchingEventHandler):
             else:
                 print 'ERROR: WATCH_DIR wrongly defined'
                 exit(1)
-            compressed_file = util.compress(json_content)
+            compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
-            #util.send_file(compressed_file, URL_DB_UPLOAD)
+            process.send_json(compressed_file, URL_DB_UPLOAD, file, PIORESULTS_DIR, LOG_FILE)
+            print util.get_time(),'removing file'
+            os.remove(file)
             time.sleep(5)#fake send file time
         except:
             'Failed to process flop'
 
 #in cmd: python main.py path_to_watch
 if __name__ == "__main__":
+    ###
     args = sys.argv[1:]
     if not os.path.exists(WATCH_DIR):
         print 'wrong path definition'
         exit(1)
     observer = Observer()
-    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
-    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)#arg in cmd: python main.py C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
+    observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+    #observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)#arg in cmd: python main.py C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/
     observer.start()
     print 'watcher started'
 

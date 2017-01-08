@@ -7,7 +7,7 @@ MAX_LENGTH_TILL_NOW = 0
 
 def create_json(output,file):
     json_content = dict()
-    flop = os.path.basename(file)[0:5]
+    flop = os.path.basename(file)[0:6]
     #get results, keys and metadata from file
     print util.get_time(),"get results, keys and metadata from file"
     pio_results,keys,pot_type,bet_size = splitfile(output)
@@ -118,3 +118,22 @@ def splitfile(file):
                    .split('BET_SIZE')[1] \
                    .split("\n")[1:-1][0]
     return pio_results,keys,pot_type,float(bet_size)
+
+def send_json(json_content,url,file,log_dir,log_name):
+    req = urllib2.Request(url)
+    req.add_header('content-type', 'application/json')
+    #JSON_CHUNKS = 1000
+    #json_dump = json.dumps(json_content)
+    log_path = log_dir + log_name
+    try:
+        #for k, v in islice(json_content.iteritems(), JSON_CHUNKS):
+        print util.get_time(),'start sending to DB...'
+        response = urllib2.urlopen(req, json_content)
+    except urllib2.HTTPError as e:
+        print e.code
+        print e.read()
+    except:
+        print 'send json failed'
+        exit(1)
+    util.log_to_file(file, log_path, response)
+    return response

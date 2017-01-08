@@ -32,27 +32,10 @@ def send_file(file,url_db_upload):
     return response
 
 def compress(data):
-    print get_time() + 'start compressing'
+    print get_time() + ' start compressing'
     compressed_file = bz2.compress(data)
-    print get_time() + 'finalised compressing'
+    print get_time() + ' finalised compressing'
     return compressed_file
-
-def send_json(json_content,url_db):
-    url = url_db + 'upload'
-    req = urllib2.Request(url)
-    req.add_header('content-type', 'application/json')
-    #JSON_CHUNKS = 1000
-    json_dump = json.dumps(json_content)
-    try:
-        #for k, v in islice(json_content.iteritems(), JSON_CHUNKS):
-        response = urllib2.urlopen(req, json_dump)
-    except urllib2.HTTPError as e:
-        print e.code
-        print e.read()
-    except:
-        print 'send json failed'
-        exit(1)
-    return response
 
 def FileWriteIsDone(path, filesize=None, timeout=999):
     sys.stdout.write('\r'+str(timeout))
@@ -89,3 +72,27 @@ class Result():
 def key2fullkey(flopname, key, pot_type, bet_size):
     full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
     return full_key
+
+def log_to_file(file,log_path,response=None):
+    if response.code == 201:#successfull
+        success = 1
+    elif response.code == 403:
+        print get_time(),'Error: sent package was empty'
+        success = 0
+    else:
+        success = 0
+        print get_time(), 'Error: reponse code = ', str(response.code)
+    #write to external file
+    with open(log_path, 'a') as f:
+        if success == 0:
+            if not response == None:
+                content = file + ' (failed sending to db)\n'
+                content += 'response: ' + response.read()
+            else:
+                content = file + ' (failed sending to db)\n'
+        elif success == 1:
+            content = file + ' (successfully sent to db)\n'
+        print content
+        f.write(content)
+    return
+
