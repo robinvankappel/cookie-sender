@@ -13,7 +13,7 @@ JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_s
 PIORESULTS_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\db-filler\\generated_scripts\\OUTPUT_results\\'
 WATCH_DIR = PIORESULTS_DIR
 #SENTJSON_FOLDER = WATCH_DIR + 'sent_jsons\\'
-URL_DB = 'http://5.79.86.66/app_dev.php/'
+URL_DB = 'http://5.79.86.66/'
 URL_DB_UPLOAD = URL_DB + 'upload'
 LOG_FILE = 'log_watcher.txt'
 
