@@ -104,6 +104,8 @@ def build_json(file,actions,end_of_file_index):
 def splitfile(file):
     file = file.replace('stdoutredi ok!','')
     splitfile = file.split("free_tree ok!")
+    if len(splitfile) != 2:
+        print "ERROR: 'free_tree ok!' not found in output file > cannot process the file"
     pio_results = splitfile[0].split("is_ready ok!")[:-1]
     keys = splitfile[1] \
                .split('KEYS START')[1] \
@@ -133,8 +135,8 @@ def send_json(json_content,url,file,log_dir,log_name):
     except:
         print 'send json failed'
         exit(1)
-    util.log_to_file(file, log_path, response)
-    return response
+    success = util.log_to_file(file, log_path, response)
+    return success
 
 def key2fullkey(flopname, key, pot_type, bet_size):
     full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')

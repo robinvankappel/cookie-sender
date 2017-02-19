@@ -4,11 +4,10 @@ import sys
 import os
 
 ##### GLOBAL VARIABLES ####
-START_TIME = time.time()
 
 def get_time():
-    time_new = (time.time()-START_TIME)
-    time_str = '+'+str(int(time_new/60.0))+'min (' + str(int(time_new)) + 'sec)'
+    time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    time_str = '(Time: ' + time_now + ') '
     return time_str
 
 def compress(data):
@@ -65,10 +64,10 @@ def log_to_file(file,log_path,response=None):
                 content = file + ' (failed sending to db)' + get_time() +'\n'
                 content += 'response: ' + response.read() + '\n\n'
             else:
-                content = file + ' (failed sending to db)' + get_time() +'\n'
+                content = file + ' (failed sending to db)' + get_time()
         elif success == 1:
-            content = file + ' (successfully sent to db)' + get_time() +'\n'
+            content = file + ' (successfully sent to db)' + get_time()
         print content
         f.write(content)
-    return
+    return success
 

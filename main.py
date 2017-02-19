@@ -61,10 +61,11 @@ class MyHandler(PatternMatchingEventHandler):
             # compress json file and send
             compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
-            process.send_json(compressed_file, URL_DB_UPLOAD, file, PIORESULTS_DIR, LOG_FILE)
-            # remove file
-            print util.get_time(),'removing file'
-            os.remove(file)
+            success = process.send_json(compressed_file, URL_DB_UPLOAD, file, PIORESULTS_DIR, LOG_FILE)
+            if success == 1:
+                # remove file
+                print util.get_time(),'removing file'
+                os.remove(file)
         except:
             'Failed to process flop'
 
