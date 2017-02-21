@@ -16,29 +16,33 @@ def compress(data):
     print get_time() + ' finalised compressing'
     return compressed_file
 
-def FileWriteIsDone(path, filesize=None, timeout=999):
-    sys.stdout.write('\r'+str(timeout))
-    sys.stdout.flush()
-    if (timeout <= 0):
-        return False
-    if (os.path.isfile(path)):
-        filesize_new = os.stat(path).st_size
-        if (filesize_new == filesize) and (filesize > 10000):
-            with open(path, 'r+') as f:
-                file = f.read()
-                if 'END_OF_FILE' in file:
-                    f.closed
-                    print get_time() + 'file succesfully read'
-                    return file;
-                else:
-                    time.sleep(1)
-                    return FileWriteIsDone(path, filesize_new, timeout - 1)
+#Wait till file is fully written. If timeout = -1, iteration never stops
+def FileWriteIsDone(path, filesize=None, timeout=-1):
+    while 1:
+        sys.stdout.write('\r'+str(abs(timeout)))
+        sys.stdout.flush()
+        if (timeout == 0):
+            return False
+        if (os.path.isfile(path)):
+            filesize_new = os.stat(path).st_size
+            if (filesize_new == filesize) and (filesize > 10000):
+                with open(path, 'r+') as f:
+                    file = f.read()
+                    if 'END_OF_FILE' in file:
+                        f.closed
+                        print get_time() + 'file succesfully read'
+                        return file;
+                    else:
+                        time.sleep(1)
+                        timeout -= 1
+                        filesize = filesize_new
+            else:
+                time.sleep(1)
+                timeout -= 1
+                filesize = filesize_new
         else:
             time.sleep(1)
-            return FileWriteIsDone(path, filesize_new, timeout - 1)
-    else:
-        time.sleep(1)
-        return FileWriteIsDone(path,filesize,timeout - 1)
+            timeout -= 1
 
 class Result():
     """

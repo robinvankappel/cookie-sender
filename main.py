@@ -8,17 +8,15 @@ import util
 import process
 import json
 
-##### GLOBAL INPUT VARIABLES ####
-JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_scripts\\json_files\\temp'
-PIORESULTS_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\db-filler\\generated_scripts\\OUTPUT_results\\'
-WATCH_DIR = PIORESULTS_DIR
-#SENTJSON_FOLDER = WATCH_DIR + 'sent_jsons\\'
+##### LOCAL PATHS #####
+from config_paths import *
+
+##### SERVER PARAMETERS #####
 URL_DB = 'http://5.79.86.66/'
 URL_DB_UPLOAD = URL_DB + 'upload'
+
+##### ADDITIONAL PARAMETERS #####
 LOG_FILE = 'log_watcher.txt'
-
-##### GLOBAL VARIABLES (don't change) ####
-
 
 class MyHandler(PatternMatchingEventHandler):
     patterns = ["*.txt"]
@@ -61,7 +59,8 @@ class MyHandler(PatternMatchingEventHandler):
             # compress json file and send
             compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
-            success = process.send_json(compressed_file, URL_DB_UPLOAD, file, PIORESULTS_DIR, LOG_FILE)
+            response = process.send_json(compressed_file, URL_DB_UPLOAD)
+            success = util.log_to_file(file, PIORESULTS_DIR + LOG_FILE, response)
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'
@@ -80,9 +79,9 @@ if __name__ == "__main__":
     # use this line when you run this program from pycharm
     #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
 
-    # use this line when you run this program via cmd:
-    # #arg in cmd: python main.py 'dir to watch'
-    # e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
+    # use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
+    ###arg in cmd: python main.py 'dir to watch'
+    ###e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
     observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
 
     observer.start()

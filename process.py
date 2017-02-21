@@ -120,11 +120,10 @@ def splitfile(file):
                    .split("\n")[1:-1][0]
     return pio_results,keys,pot_type,float(bet_size)
 
-def send_json(json_content,url,file,log_dir,log_name):
+def send_json(json_content,url):
     req = urllib2.Request(url)
     req.add_header('content-type', 'application/json')
     #JSON_CHUNKS = 1000
-    log_path = log_dir + log_name
     try:
         #for k, v in islice(json_content.iteritems(), JSON_CHUNKS):
         print util.get_time(),'start sending to DB...'
@@ -135,8 +134,7 @@ def send_json(json_content,url,file,log_dir,log_name):
     except:
         print 'send json failed'
         exit(1)
-    success = util.log_to_file(file, log_path, response)
-    return success
+    return response
 
 def key2fullkey(flopname, key, pot_type, bet_size):
     full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
