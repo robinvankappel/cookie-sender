@@ -60,7 +60,7 @@ class MyHandler(PatternMatchingEventHandler):
             compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
             response = process.send_json(compressed_file, URL_DB_UPLOAD)
-            success = util.log_to_file(file, PIORESULTS_DIR + LOG_FILE, response)
+            success = util.log_to_file(file, os.path.join(PIORESULTS_DIR,LOG_FILE), response)
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'
@@ -76,10 +76,11 @@ if __name__ == "__main__":
         print 'wrong path definition'
         exit(1)
     observer = Observer()
-    # use this line when you run this program from pycharm
+
+    # 1. use this line when you run this program from pycharm
     #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
 
-    # use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
+    # 2. use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
     ###arg in cmd: python main.py 'dir to watch'
     ###e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
     observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)

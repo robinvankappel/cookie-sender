@@ -7,7 +7,7 @@ import os
 
 def get_time():
     time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    time_str = '(Time: ' + time_now + ') '
+    time_str = ' (Time: ' + time_now + ') '
     return time_str
 
 def compress(data):
@@ -68,9 +68,9 @@ def log_to_file(file,log_path,response=None):
                 content = file + ' (failed sending to db)' + get_time() +'\n'
                 content += 'response: ' + response.read() + '\n\n'
             else:
-                content = file + ' (failed sending to db)' + get_time()
+                content = file + ' (failed sending to db)' + get_time() +'\n'
         elif success == 1:
-            content = file + ' (successfully sent to db)' + get_time()
+            content = file + ' (successfully sent to db)' + get_time() +'\n'
         print content
         f.write(content)
     return success

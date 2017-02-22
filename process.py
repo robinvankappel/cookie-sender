@@ -43,7 +43,7 @@ def averageLen(lst):
     lengths = [len(i) for i in lst]
     max_length = max(lengths)
     if max_length > MAX_LENGTH_TILL_NOW:
-        print 'Max key length: ' + str(max_length) + "--> key: " + str(lst[lengths.index(max_length)])
+        print 'Max key length: ' + str(max_length) + " --> key: " + str(lst[lengths.index(max_length)])
         global MAX_LENGTH_TILL_NOW
         MAX_LENGTH_TILL_NOW = max_length
     if len(lengths) == 0:
@@ -103,9 +103,9 @@ def build_json(file,actions,end_of_file_index):
 
 def splitfile(file):
     file = file.replace('stdoutredi ok!','')
-    splitfile = file.split("free_tree ok!")
+    splitfile = file.split("END_OF_RESULTS")
     if len(splitfile) != 2:
-        print "ERROR: 'free_tree ok!' not found in output file > cannot process the file"
+        print "ERROR: 'END_OF_RESULTS' not found in output file > cannot process the file"
     pio_results = splitfile[0].split("is_ready ok!")[:-1]
     keys = splitfile[1] \
                .split('KEYS START')[1] \
