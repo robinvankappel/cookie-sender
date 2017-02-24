@@ -64,7 +64,10 @@ class MyHandler(PatternMatchingEventHandler):
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'
-                os.remove(file)
+                if os.path.isfile(file):
+                    os.remove(file)
+                else:
+                    print 'ERROR: Removal of file was not possible, since it cannot be found'
         except:
             'Failed to process flop'
 
