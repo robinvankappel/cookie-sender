@@ -28,12 +28,12 @@ def create_json(output,file):
         #get json content
         json_content_of_key = get_json_from_result(result_per_hand)
         # generate full key
-        full_key_corr = key2fullkey(flop, result.key, pot_type, bet_size)
+        DB_key = key2DBkey(flop, result.key)
         #add to json
-        json_content[full_key_corr] = json_content_of_key
+        json_content[DB_key] = json_content_of_key
 
         #key size check:
-        keys_list.append(full_key_corr)
+        keys_list.append(DB_key)
     avg_keys,max_keys = averageLen(keys_list)
 
     print util.get_time(), "json_content generated"
@@ -136,6 +136,7 @@ def send_json(json_content,url):
         exit(1)
     return response
 
-def key2fullkey(flopname, key, pot_type, bet_size):
-    full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
+def key2DBkey(flopname, key):
+    key.replace('b','')
+    full_key = flopname + key.replace(':', '_')
     return full_key
