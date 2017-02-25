@@ -1,41 +1,57 @@
 import urllib2
-import json
 import util
 import os
 
-def create_json(pio_results_file):
+MAX_LENGTH_TILL_NOW = 0
+
+def create_json(output,file):
     json_content = dict()
-    flop = os.path.basename(pio_results_file)[0:5]
-    with open(pio_results_file,'r+') as f:
-        #todo: read line by line and save to python object
-        print util.get_time(),'reading pio results file'
-        file = f.readlines()
-        #get results, keys and metadata from file
-        print util.get_time(),"get results, keys and metadata from file"
-        pio_results,keys,pot_type,bet_size = splitfile(file)
-        # check whether number of keys and results are equal
-        if (len(keys) == len(pio_results)) == False:
-            print 'ERROR: number of found keys in Pio results file is not equal to keys (requires debugging)'
-            exit(1)
-        #make object of result-key combination
-        results = list()
-        print util.get_time(), "make object of result-key combination"
-        for i,pio_result in enumerate(pio_results):
-            key = keys[i]
-            results.append(util.Result(pio_result,key))
-        # process results per key
-        print util.get_time(), "process results per key..."
-        for result in results:
-            result_per_hand = result.pio_result.split('\n')
-            #get json content
-            json_content_of_key = get_json_from_result(result_per_hand)
-            # generate full key
-            full_key_corr = util.key2fullkey(flop, result.key, pot_type, bet_size)
-            #add to json
-            json_content[full_key_corr] = json_content_of_key
-    f.closed
+    flop = os.path.basename(file)[0:6]
+    #get results, keys and metadata from file
+    print util.get_time(),"get results, keys and metadata from file"
+    pio_results,keys,pot_type,bet_size = splitfile(output)
+    # check whether number of keys and results are equal
+    if (len(keys) == len(pio_results)) == False:
+        print 'ERROR: number of found keys in Pio results file is not equal to keys (requires debugging)'
+        exit(1)
+    #make object of result-key combination
+    results = list()
+    print util.get_time(), "make object of result-key combination"
+    for i,pio_result in enumerate(pio_results):
+        key = keys[i]
+        results.append(util.Result(pio_result,key))
+    # process results per key
+    print util.get_time(), "process results per key..."
+    keys_list = list()
+    for result in results:
+        result_per_hand = result.pio_result.split('\n')
+        #get json content
+        json_content_of_key = get_json_from_result(result_per_hand)
+        # generate full key
+        full_key_corr = key2fullkey(flop, result.key, pot_type, bet_size)
+        #add to json
+        json_content[full_key_corr] = json_content_of_key
+
+        #key size check:
+        keys_list.append(full_key_corr)
+    avg_keys,max_keys = averageLen(keys_list)
+
     print util.get_time(), "json_content generated"
     return json_content
+
+def averageLen(lst):
+    lengths = [len(i) for i in lst]
+    max_length = max(lengths)
+    if max_length > MAX_LENGTH_TILL_NOW:
+        print 'Max key length: ' + str(max_length) + " --> key: " + str(lst[lengths.index(max_length)])
+        global MAX_LENGTH_TILL_NOW
+        MAX_LENGTH_TILL_NOW = max_length
+    if len(lengths) == 0:
+        avg_length = 0
+    else:
+        avg_length = (float(sum(lengths)) / len(lengths))
+    print 'Avg key length: ' + str(avg_length)
+    return avg_length, max_length
 
 def get_json_from_result(result_per_hand):
     #find lines with children and extract action
@@ -86,9 +102,11 @@ def build_json(file,actions,end_of_file_index):
     return json_content_of_key
 
 def splitfile(file):
-    splitfile = file.split("free_tree ok!")
-    #todo: not present anymore in result file, use other identifier.
-    pio_results = splitfile[0].split("stdoutredi_append ok!")[1:]
+    file = file.replace('stdoutredi ok!','')
+    splitfile = file.split("END_OF_RESULTS")
+    if len(splitfile) != 2:
+        print "ERROR: 'END_OF_RESULTS' not found in output file > cannot process the file"
+    pio_results = splitfile[0].split("is_ready ok!")[:-1]
     keys = splitfile[1] \
                .split('KEYS START')[1] \
                .split('KEYS END')[0] \
@@ -101,3 +119,23 @@ def splitfile(file):
                    .split('BET_SIZE')[1] \
                    .split("\n")[1:-1][0]
     return pio_results,keys,pot_type,float(bet_size)
+
+def send_json(json_content,url):
+    req = urllib2.Request(url)
+    req.add_header('content-type', 'application/json')
+    #JSON_CHUNKS = 1000
+    try:
+        #for k, v in islice(json_content.iteritems(), JSON_CHUNKS):
+        print util.get_time(),'start sending to DB...'
+        response = urllib2.urlopen(req, json_content)
+    except urllib2.HTTPError as e:
+        print e.code
+        print e.read()
+    except:
+        print 'send json failed'
+        exit(1)
+    return response
+
+def key2fullkey(flopname, key, pot_type, bet_size):
+    full_key = flopname + '_' + str(pot_type) + '_' + str(int(bet_size * 10.0)) + '_' + key.replace(':', '_')
+    return full_key
