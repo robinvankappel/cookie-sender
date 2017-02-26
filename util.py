@@ -55,23 +55,29 @@ class Result():
 def log_to_file(file,log_path,response=None):
     if response.code == 201:#successfull
         success = 1
-    elif response.code == 403:
-        print get_time(),'Error: sent package was empty'
-        success = 0
     else:
+        if response.code == 403:
+            print get_time(),'Error: sent package was empty'
+        else:
+            print get_time(), 'Error: reponse code = ', str(response.code)
         success = 0
-        print get_time(), 'Error: reponse code = ', str(response.code)
+        response_content = response.read()
     #write to external file
     with open(log_path, 'a') as f:
         if success == 0:
             if not response == None:
-                content = file + ' (failed sending to db)' + get_time() +'\n'
-                content += 'response: ' + response.read() + '\n\n'
+                content = file + ' (failed sending to db: response = ' + str(response.code) + ')' + get_time() + '\n'
             else:
-                content = file + ' (failed sending to db)' + get_time() +'\n'
+                content = file + ' (failed sending to db: no response)' + get_time() +'\n'
         elif success == 1:
-            content = file + ' (successfully sent to db)' + get_time() +'\n'
-        print content
+            content = file + ' (successfully sent to db: response = 201)' + get_time() +'\n'
+        print get_time(), 'logging: ' + content
         f.write(content)
     return success
 
+def log_outputfiles(file, log_path):
+    # write to external file
+    with open(log_path, 'a') as f:
+        content = file + ' (fully written to disk)' + get_time() + '\n'
+        f.write(content)
+    return

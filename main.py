@@ -45,6 +45,7 @@ class MyHandler(PatternMatchingEventHandler):
         print 'Waiting till file write is finished...'
         try:
             output = util.FileWriteIsDone(file)
+            util.log_outputfiles(file, os.path.join(PIORESULTS_DIR, LOG_FILE))
             print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
@@ -60,7 +61,7 @@ class MyHandler(PatternMatchingEventHandler):
             compressed_file = util.compress(str(json_content))
             print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
             response = process.send_json(compressed_file, URL_DB_UPLOAD)
-            success = util.log_to_file(file, os.path.join(PIORESULTS_DIR,LOG_FILE), response)
+            success = util.log_response(file, os.path.join(PIORESULTS_DIR, LOG_FILE), response)
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'
