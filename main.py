@@ -11,10 +11,6 @@ import json
 ##### LOCAL PATHS #####
 from config_paths import *
 
-##### SERVER PARAMETERS #####
-URL_DB = 'http://5.79.86.66/'
-URL_DB_UPLOAD = URL_DB + 'upload'
-
 ##### ADDITIONAL PARAMETERS #####
 LOG_FILE = 'log_watcher.txt'
 
@@ -49,7 +45,8 @@ class MyHandler(PatternMatchingEventHandler):
             print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
-                json_content_dict = process.create_json(output,file)
+                json_content_dict, pot_type, keys_length = process.create_json(output,file)
+                print util.get_time() + " pot type = " + pot_type
                 json_content = json.dumps(json_content_dict)
             elif WATCH_DIR == JSON_DIR:
                 json_content = open(file, 'rb').read()
@@ -58,9 +55,10 @@ class MyHandler(PatternMatchingEventHandler):
                 exit(1)
             # compress json file and send
             compressed_file = util.compress(str(json_content))
-            print 'filesize = ' + str(round(compressed_file.__sizeof__() / 1000000.0, 1)) + 'MB'
-            response = process.send_json(compressed_file, URL_DB_UPLOAD)
-            success = util.log_response(file, os.path.join(PIORESULTS_DIR,LOG_FILE), response)
+            filesize = round(compressed_file.__sizeof__() / 1000000.0, 1)
+            print 'filesize = ' + str(filesize) + 'MB'
+            response = process.send_json(compressed_file, URL_DB, pot_type)
+            success = util.log_response(file, os.path.join(PIORESULTS_DIR,LOG_FILE), filesize, keys_length, pot_type, response)
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'

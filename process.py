@@ -37,7 +37,7 @@ def create_json(output,file):
     avg_keys,max_keys = averageLen(keys_list)
 
     print util.get_time(), "json_content generated"
-    return json_content
+    return json_content, pot_type, len(keys)
 
 def averageLen(lst):
     lengths = [len(i) for i in lst]
@@ -120,7 +120,16 @@ def splitfile(file):
                    .split("\n")[1:-1][0]
     return pio_results,keys,pot_type,float(bet_size)
 
-def send_json(json_content,url):
+def send_json(json_content,url_db, pot_type):
+    if pot_type == 's':
+        url_upload = '/insertsrp'
+    elif pot_type == '3':
+        url_upload = '/insertdriebet'
+    else:
+        print util.get_time(),'ERROR: pot type not recognised, cannot upload to DB.'
+        response = None
+        return response
+    url = url_db + url_upload
     req = urllib2.Request(url)
     req.add_header('content-type', 'application/json')
     #JSON_CHUNKS = 1000
@@ -131,12 +140,16 @@ def send_json(json_content,url):
     except urllib2.HTTPError as e:
         print e.code
         print e.read()
+        print 'send json failed'
+        response = e.code
     except:
         print 'send json failed'
-        exit(1)
+        response = None
     return response
 
 def key2DBkey(flopname, key):
-    key.replace('b','')
-    full_key = flopname + key.replace(':', '_')
+    key = key.replace('b','')
+    key = key.replace('r:0:', '')
+    key = key.replace(':', '_')
+    full_key = flopname + key
     return full_key

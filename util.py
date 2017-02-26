@@ -52,25 +52,39 @@ class Result():
         self.pio_result = pio_result
         self.key = key
 
-def log_response(file,log_path,response=None):
+def log_response(file,log_path, filesize, keys_length, pot_type, response=None):
+    filesize_per_key = round(filesize*1024/float(keys_length),0)
+    content = file
+    #write content
     if response.code == 201:#successfull
         success = 1
+        content += ' (successfully sent to db[' + str(pot_type) + ']: response = 201'
+        content += ', DB_filesize_total = ' + str(filesize) + 'MB, DB_filesize_per-key = ' + str(
+            filesize_per_key) + 'KB'
+    elif response == 404:
+        print get_time(), 'Http error 404: not found.'
+        success = 0
+    elif response == None:
+        print get_time(), 'Http error 404: not found.'
+        success = 0
     else:
+        success = 0
+        content += ' (failed sending to db[' + str(pot_type) + ']:'
         if response.code == 403:
             print get_time(),'Error: sent package was empty'
+            content += 'response = ' + str(response.code)
+        elif response == 404:
+            print get_time(), 'Http error 404: not found.'
+            content += 'response = ' + str(response)
+        elif response == None:
+            print get_time(), 'No response'
+            content += 'no response'
         else:
             print get_time(), 'Error: reponse code = ', str(response.code)
-        success = 0
-        response_content = response.read()
+            content += 'response = ' + str(response.code)
+    content += ')' + get_time() + '\n'
     #write to external file
     with open(log_path, 'a') as f:
-        if success == 0:
-            if not response == None:
-                content = file + ' (failed sending to db: response = ' + str(response.code) + ')' + get_time() + '\n'
-            else:
-                content = file + ' (failed sending to db: no response)' + get_time() +'\n'
-        elif success == 1:
-            content = file + ' (successfully sent to db: response = 201)' + get_time() +'\n'
         print get_time(), 'logging: ' + content
         f.write(content)
     return success
