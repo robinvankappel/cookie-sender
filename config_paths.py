@@ -1,6 +1,6 @@
 ##### SETTINGS GOOGLE INSTANCE ########
 JSON_DIR = 'balbalbalb'
-PIORESULTS_DIR = 'E:\\db-filler\\generated_scripts\\OUTPUT_results'
+PIORESULTS_DIR = 'D:\\db-filler\\generated_scripts\\OUTPUT_results'
 WATCH_DIR = PIORESULTS_DIR
 
 # ##### SETTINGS PC JELLE ########
