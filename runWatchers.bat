@@ -1,37 +1,39 @@
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/A
+SET watcherdir=D:\watcher\main.py
+SET resultdir=D:\db-filler\generated_scripts\OUTPUT_results\
+start call python %watcherdir% %resultdir%A
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/B
+start call python %watcherdir% %resultdir%B
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/C
+start call python %watcherdir% %resultdir%C
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/D
+start call python %watcherdir% %resultdir%D
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/E
+start call python %watcherdir% %resultdir%E
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/F
+start call python %watcherdir% %resultdir%F
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/G
+start call python %watcherdir% %resultdir%G
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/H
+start call python %watcherdir% %resultdir%H
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/I
+start call python %watcherdir% %resultdir%I
 
 
 
-start call python E:/watcher/main.py E:/db-filler/generated_scripts/OUTPUT_results/J
+start call python %watcherdir% %resultdir%J
