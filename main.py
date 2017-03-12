@@ -83,12 +83,12 @@ if __name__ == "__main__":
     observer = Observer()
 
     # 1. use this line when you run this program from pycharm
-    observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
 
     # 2. use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
     ###arg in cmd: python main.py 'dir to watch'
     ###e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
-    #observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
+    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
 
     observer.start()
     print 'watcher started'
