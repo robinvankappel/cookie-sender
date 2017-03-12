@@ -45,7 +45,11 @@ class MyHandler(PatternMatchingEventHandler):
             print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
-                json_content_dict, pot_type, keys_length = process.create_json(output,file)
+                flop, json_content_dict, pot_type, keys_length = process.create_json(output,file)
+                if not 'URL_PICKER' in globals():
+                    global URL_PICKER
+                    URL_PICKER = process.url_picker(URLS_DB)
+                url_db = process.choose_url(flop,URL_PICKER)
                 print util.get_time() + " pot type = " + pot_type
                 json_content = json.dumps(json_content_dict)
             elif WATCH_DIR == JSON_DIR:
@@ -57,7 +61,7 @@ class MyHandler(PatternMatchingEventHandler):
             compressed_file = util.compress(str(json_content))
             filesize = round(compressed_file.__sizeof__() / 1000000.0, 1)
             print 'filesize = ' + str(filesize) + 'MB'
-            response = process.send_json(compressed_file, URL_DB, pot_type)
+            response = process.send_json(compressed_file, url_db, pot_type)
             success = util.log_response(file, os.path.join(PIORESULTS_DIR,LOG_FILE), filesize, keys_length, pot_type, response)
             if success == 1:
                 # remove file
@@ -79,12 +83,12 @@ if __name__ == "__main__":
     observer = Observer()
 
     # 1. use this line when you run this program from pycharm
-    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+    observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
 
     # 2. use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
     ###arg in cmd: python main.py 'dir to watch'
     ###e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
-    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
+    #observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
 
     observer.start()
     print 'watcher started'

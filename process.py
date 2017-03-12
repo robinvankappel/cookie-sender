@@ -1,6 +1,7 @@
 import urllib2
 import util
 import os
+import math
 
 MAX_LENGTH_TILL_NOW = 0
 
@@ -37,7 +38,7 @@ def create_json(output,file):
     avg_keys,max_keys = averageLen(keys_list)
 
     print util.get_time(), "json_content generated"
-    return json_content, pot_type, len(keys)
+    return flop, json_content, pot_type, len(keys)
 
 def averageLen(lst):
     lengths = [len(i) for i in lst]
@@ -153,3 +154,18 @@ def key2DBkey(flopname, key):
     key = key.replace(':', '_')
     full_key = flopname + key
     return full_key
+
+def url_picker(URLS_DB):
+    cards = ['A','2','3','4','5','6','7','8','9','T','J','Q','K']
+    url_picker = util.chunkIt(cards, len(URLS_DB))
+    print 'DB is chosen according to initial flop letters: ', str(zip(url_picker,URLS_DB))
+    return zip(url_picker,URLS_DB)
+
+def choose_url(flop,url_picker):
+    for el in url_picker:
+        if flop[0] in el[0]:
+            url = el[1]
+            break
+    print 'url_db = ' + url
+    return url
+

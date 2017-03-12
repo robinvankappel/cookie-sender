@@ -2,6 +2,8 @@ import time
 import bz2
 import sys
 import os
+import itertools
+
 
 ##### GLOBAL VARIABLES ####
 
@@ -95,3 +97,15 @@ def log_outputfiles(file, log_path):
         content = file + ' (fully written to disk)' + get_time() + '\n'
         f.write(content)
     return
+
+#gives back iterators; type list(split_every(a,b)) to retrieve the elements in a list
+def chunkIt(seq, num):
+  avg = len(seq) / float(num)
+  out = []
+  last = 0.0
+
+  while last < len(seq):
+    out.append(seq[int(last):int(last + avg)])
+    last += avg
+
+  return out
