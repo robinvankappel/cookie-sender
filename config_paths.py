@@ -9,6 +9,9 @@ WATCH_DIR = PIORESULTS_DIR
 # WATCH_DIR = PIORESULTS_DIR
 
 ##### SERVER PARAMETERS #####
-URLS_DB = ('http://95.211.206.203/app_dev.php',
-           'http://95.211.206.203/app_dev.php')
-#'http://5.79.86.66'
+# URLS_DB = ('http://95.211.206.203/app_dev.php',
+#            'http://95.211.206.203/app_dev.php')
+URLS_DB = ('http://37.48.82.34',
+           'http://37.48.82.33',
+           'http://62.212.86.8',
+           'http://62.212.86.6')
