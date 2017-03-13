@@ -156,8 +156,9 @@ def key2DBkey(flopname, key):
     return full_key
 
 def url_picker(URLS_DB):
-    cards = ['A','2','3','4','5','6','7','8','9','T','J','Q','K']
-    url_picker = util.chunkIt(cards, len(URLS_DB))
+    # cards = ['A','2','3','4','5','6','7','8','9','T','J','Q','K']
+    # url_picker = util.chunkIt(cards, len(URLS_DB))
+    url_picker = [['A','2','3','4','5'],['8','K'],['T','Q'],['6','7','9','J']]
     print 'DB is chosen according to initial flop letters: ', str(zip(url_picker,URLS_DB))
     return zip(url_picker,URLS_DB)
 
