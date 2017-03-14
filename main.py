@@ -40,7 +40,7 @@ class MyHandler(PatternMatchingEventHandler):
     def on_finished(self,file):
         print 'Waiting till file write is finished...'
         try:
-            output = util.FileWriteIsDone(file)
+            output = util.FileWriteIsDone(file,timeout=200)
             util.log_outputfiles(file, os.path.join(PIORESULTS_DIR, LOG_FILE))
             print util.get_time(),"Start processing pio results"
             if WATCH_DIR == PIORESULTS_DIR:
