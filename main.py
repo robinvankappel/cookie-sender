@@ -40,7 +40,7 @@ class MyHandler(PatternMatchingEventHandler):
     def on_finished(self,file):
         print 'Waiting till file write is finished...'
         try:
-            output = util.FileWriteIsDone(file,PIORESULTS_DIR,timeout=200)
+            output = util.FileWriteIsDone(file,PIORESULTS_DIR,timeout=120)
             if not output:
                 return
             util.log_outputfiles(file, os.path.join(PIORESULTS_DIR, LOG_FILE))
