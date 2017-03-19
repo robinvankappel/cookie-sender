@@ -19,11 +19,21 @@ def compress(data):
     return compressed_file
 
 #Wait till file is fully written. If timeout = -1, iteration never stops
-def FileWriteIsDone(path, filesize=None, timeout=-1):
+def FileWriteIsDone(path, dir, filesize=None, timeout=-1):
+    end = False
+    no_meta_data = False
     while 1:
         sys.stdout.write('\r'+str(abs(timeout)))
         sys.stdout.flush()
         if (timeout == 0):
+            if no_meta_data:# metadata still not written, thus move file.
+                filepath, file = os.path.split(path)
+                erroneous_folder = os.path.join(dir, 'no_meta_data-output_files')
+                if not os.path.exists(erroneous_folder):
+                    os.makedirs(erroneous_folder)
+                print get_time() + 'no meta data found in file, moving file to other folder'
+                os.rename(path, os.path.join(erroneous_folder,file))
+            print get_time() + "time out has passed, file is skipped"
             return False
         if (os.path.isfile(path)):
             filesize_new = os.stat(path).st_size
@@ -31,13 +41,16 @@ def FileWriteIsDone(path, filesize=None, timeout=-1):
                 with open(path, 'r+') as f:
                     file = f.read()
                     if 'END_OF_FILE' in file:
-                        f.closed
-                        print get_time() + 'file succesfully read'
-                        return file;
-                    else:
+                        end = True
+                    else:#wait till metadata is written
+                        no_meta_data = True
                         time.sleep(1)
                         timeout -= 1
                         filesize = filesize_new
+                while end:
+                    if f.closed:
+                        print get_time() + 'file succesfully read'
+                        return file;
             else:
                 time.sleep(1)
                 timeout -= 1
