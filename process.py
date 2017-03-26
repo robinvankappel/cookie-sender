@@ -155,14 +155,20 @@ def key2DBkey(flopname, key):
     full_key = flopname + key
     return full_key
 
-def url_picker(URLS_DB):
-    # cards = ['A','2','3','4','5','6','7','8','9','T','J','Q','K']
-    # url_picker = util.chunkIt(cards, len(URLS_DB))
-    url_picker = [['A','2','3','4','5'],['8','K'],['T','Q'],['6','7','9','J']]
-    print 'DB is chosen according to initial flop letters: ', str(zip(url_picker,URLS_DB))
-    return zip(url_picker,URLS_DB)
+def url_picker(URLS_DB_SRP,URLS_DB_3B):
+    flop_picker_srp = [['A','2','3','4','5'],['8','K'],['T','Q'],['6','7','9','J']]
+    flop_picker_3b = [['A','2','3','4','5','6','7','8','9','T','J','Q','K']]
+    url_picker_srp = zip(flop_picker_srp,URLS_DB_SRP)
+    url_picker_3b = zip(flop_picker_3b, URLS_DB_3B)
+    print 'DB for SRP is chosen according to initial flop letters: ', str(url_picker_srp)
+    print 'DB for 3B is chosen according to initial flop letters: ', str(url_picker_3b)
+    return url_picker_srp, url_picker_3b
 
-def choose_url(flop,url_picker):
+def choose_url(flop,pot_type,url_picker_srp,url_picker_3b):
+    if pot_type == 's':
+        url_picker = url_picker_srp
+    elif pot_type == '3':
+        url_picker = url_picker_3b
     for el in url_picker:
         if flop[0] in el[0]:
             url = el[1]

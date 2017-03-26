@@ -1,6 +1,6 @@
 ##### SETTINGS GOOGLE INSTANCE ########
 JSON_DIR = 'balbalbalb'
-PIORESULTS_DIR = 'D:\\db-filler\\generated_scripts\\OUTPUT_results'
+PIORESULTS_DIR = 'D:\\db-filler_1\\generated_scripts\\OUTPUT_results'
 WATCH_DIR = PIORESULTS_DIR
 
 # ##### SETTINGS PC JELLE ########
@@ -11,7 +11,8 @@ WATCH_DIR = PIORESULTS_DIR
 ##### SERVER PARAMETERS #####
 # URLS_DB = ('http://95.211.206.203/app_dev.php',
 #            'http://95.211.206.203/app_dev.php')
-URLS_DB = ('http://37.48.82.34',
+URLS_DB_SRP = ('http://37.48.82.34',
            'http://37.48.82.33',
            'http://62.212.86.8',
            'http://62.212.86.6')
+URLS_DB_3B = ('http://95.211.141.6',)

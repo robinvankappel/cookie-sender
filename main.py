@@ -48,11 +48,13 @@ class MyHandler(PatternMatchingEventHandler):
             if WATCH_DIR == PIORESULTS_DIR:
                 #convert pio results to json content
                 flop, json_content_dict, pot_type, keys_length = process.create_json(output,file)
-                if not 'URL_PICKER' in globals():
-                    global URL_PICKER
-                    URL_PICKER = process.url_picker(URLS_DB)
-                url_db = process.choose_url(flop,URL_PICKER)
+                if not ('URL_PICKER_SRP' or 'URL_PICKER_3B') in globals():
+                    global URL_PICKER_SRP
+                    global URL_PICKER_3B
+                    URL_PICKER_SRP, URL_PICKER_3B = process.url_picker(URLS_DB_SRP,URLS_DB_3B)
+                url_db = process.choose_url(flop,pot_type,URL_PICKER_SRP,URL_PICKER_3B)
                 print util.get_time() + " pot type = " + pot_type
+                print util.get_time() + " url = " + url_db
                 json_content = json.dumps(json_content_dict)
             elif WATCH_DIR == JSON_DIR:
                 json_content = open(file, 'rb').read()
