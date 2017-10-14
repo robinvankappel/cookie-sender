@@ -2,7 +2,6 @@ import time
 import bz2
 import sys
 import os
-import itertools
 
 
 ##### GLOBAL VARIABLES ####
@@ -12,13 +11,29 @@ def get_time():
     time_str = ' (Time: ' + time_now + ') '
     return time_str
 
-def compress(data):
-    print get_time() + ' start compressing'
-    compressed_file = bz2.compress(data)
-    print get_time() + ' finalised compressing'
-    return compressed_file
+def build_batch_to_run_watchers(watcher_file, watch_dir, n_watchers):
+    batch_file = helpers_dir + 'run_script_to_get_lines-' + flop.flop + '.bat'
+    if os.path.isfile(batch_file):
+        os.remove(batch_file)
+    with open(batch_file, 'w+') as f:
+        content = 'set root=' + PIO_DIR + '\n'
+        content += 'cd %root%' + '\n'
+        content += 'start /min ' + PIO_LOC + ' "' + pio_lines_file + '"\n'
+        # print 'Script for getting results of Pio'
+        # print content
+        # print '\n'
+        f.write(content)
+    return batch_file
 
-#Wait till file is fully written. If timeout = -1, iteration never stops
+class Compress():
+    def __init__(self,json_content):
+        data = str(json_content)
+        print get_time() + ' start compressing'
+        self.file = bz2.compress(data)
+        self.filesize = round(self.file.__sizeof__() / 1000000.0, 1)
+        print get_time() + ' finalised compressing (filesize = ' + str(self.filesize) + 'MB)'
+
+    #Wait till file is fully written. If timeout = -1, iteration never stops
 def FileWriteIsDone(path, dir, filesize=None, timeout=-1):
     end = False
     no_meta_data = False
@@ -71,32 +86,30 @@ def log_response(file,log_path, filesize, keys_length, pot_type, response=None):
     filesize_per_key = round(filesize*1024/float(keys_length),0)
     content = file
     #write content
-    if response.code == 201:#successfull
-        success = 1
-        content += ' (successfully sent to db[' + str(pot_type) + ']: response = 201'
-        content += ', DB_filesize_total = ' + str(filesize) + 'MB, DB_filesize_per-key = ' + str(
-            filesize_per_key) + 'KB'
-    elif response == 404:
-        print get_time(), 'Http error 404: not found.'
+    if response == None:
+        content += ' (NO RESPONSE)'
+        print get_time(), 'NO RESPONSE'
         success = 0
-    elif response == None:
-        print get_time(), 'Http error 404: not found.'
-        success = 0
-    else:
-        success = 0
-        content += ' (failed sending to db[' + str(pot_type) + ']:'
-        if response.code == 403:
-            print get_time(),'Error: sent package was empty'
-            content += 'response = ' + str(response.code)
-        elif response == 404:
-            print get_time(), 'Http error 404: not found.'
-            content += 'response = ' + str(response)
-        elif response == None:
-            print get_time(), 'No response'
-            content += 'no response'
+    elif 'response.code' in locals():
+        if response.code == 201:
+            content += ' (successfully sent to db[' + str(pot_type) + ']: response = 201'
+            content += ', DB_filesize_total = ' + str(filesize) + 'MB, DB_filesize_per-key = ' + str(
+                filesize_per_key) + 'KB'
+            success = 1
         else:
-            print get_time(), 'Error: reponse code = ', str(response.code)
-            content += 'response = ' + str(response.code)
+            content += ' (FAILED sending to db[' + str(
+                pot_type) + ']:'  # todo: eval whether pot_type should be displayed
+            success = 0
+            if response == 404:
+                content += 'response = ' + str(response)
+                print get_time(), 'Http error 404: not found.'
+            elif response.code == 403:
+                content += 'response = ' + str(response.code)
+                print get_time(), 'Error: sent package was empty'
+            else:
+                print get_time(), 'Error: reponse code = ', str(response.code)
+                content += 'response = ' + str(response.code)
+
     content += ')' + get_time() + '\n'
     #write to external file
     with open(log_path, 'a') as f:

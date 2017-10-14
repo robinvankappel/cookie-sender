@@ -40,33 +40,25 @@ class MyHandler(PatternMatchingEventHandler):
     def on_finished(self,file):
         print 'Waiting till file write is finished...'
         try:
-            output = util.FileWriteIsDone(file,PIORESULTS_DIR,timeout=120)
+            output = util.FileWriteIsDone(file,WATCH_DIR,timeout=120)
             if not output:
                 return
-            util.log_outputfiles(file, os.path.join(PIORESULTS_DIR, LOG_FILE))
+            util.log_outputfiles(file, os.path.join(WATCH_DIR, LOG_FILE))
             print util.get_time(),"Start processing pio results"
-            if WATCH_DIR == PIORESULTS_DIR:
-                #convert pio results to json content
-                flop, json_content_dict, pot_type, keys_length = process.create_json(output,file)
-                if not ('URL_PICKER_SRP' or 'URL_PICKER_3B') in globals():
-                    global URL_PICKER_SRP
-                    global URL_PICKER_3B
-                    URL_PICKER_SRP, URL_PICKER_3B = process.url_picker(URLS_DB_SRP,URLS_DB_3B)
-                url_db = process.choose_url(flop,pot_type,URL_PICKER_SRP,URL_PICKER_3B)
-                print util.get_time() + " pot type = " + pot_type
-                print util.get_time() + " url = " + url_db
-                json_content = json.dumps(json_content_dict)
-            elif WATCH_DIR == JSON_DIR:
-                json_content = open(file, 'rb').read()
-            else:
-                print 'ERROR: WATCH_DIR wrongly defined'
-                exit(1)
+
+            #convert pio results to json content
+            flop, json_content_dict, pot_type, stack_size, keys_length = process.create_json(output,file)
+            url = process.choose_url(flop, pot_type, stack_size)
+            print util.get_time() + " flop = " + flop + " | pot type = " + pot_type + \
+                  " | stack size = " + stack_size + " | url = " + url
+            json_content = json.dumps(json_content_dict)
+
             # compress json file and send
-            compressed_file = util.compress(str(json_content))
-            filesize = round(compressed_file.__sizeof__() / 1000000.0, 1)
-            print 'filesize = ' + str(filesize) + 'MB'
-            response = process.send_json(compressed_file, url_db, pot_type)
-            success = util.log_response(file, os.path.join(PIORESULTS_DIR,LOG_FILE), filesize, keys_length, pot_type, response)
+            compressed_file = util.Compress(json_content)
+            #compressed_file = util.compress(str(json_content))
+            response = process.send_json(compressed_file, url)
+            success = util.log_response(file, os.path.join(WATCH_DIR,LOG_FILE), compressed_file.filesize, keys_length, pot_type, response)#todo: evaluate
+            success = 1 #todo: temp for testing...
             if success == 1:
                 # remove file
                 print util.get_time(),'removing file'
@@ -77,30 +69,67 @@ class MyHandler(PatternMatchingEventHandler):
         except:
             'Failed to process flop'
 
-#in cmd: python main.py path_to_watch
+class Watcher():
+    def __init__(self,cmd=True,watch_dir=WATCH_DIR):
+        """
+        If cmd = False:
+            use this when you run this program from pycharm
+        If cmd = True:
+            use this when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
+            arg in cmd: python main.py 'dir to watch'
+            e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
+        """
+        if not os.path.exists(watch_dir):
+            print 'wrong path definition'
+            exit(1)
+        observer = Observer()
+
+        if cmd==False:
+            observer.schedule(MyHandler(), path=watch_dir, recursive=True)
+        else:
+            args = sys.argv[1:]
+            observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
+
+        observer.start()
+        print 'watcher started'
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()
+
 if __name__ == "__main__":
-    ###
-    args = sys.argv[1:]
-    if not os.path.exists(WATCH_DIR):
-        print 'wrong path definition'
-        exit(1)
-    observer = Observer()
+    if PARALLEL_PROC:#todo: is this faster then separate started processes?
+        import multiprocessing as mp
+        ##Multiprocessing: Process / Pool / Thread.
+        # Using Pool:
+        pool = mp.Pool(processes=WATCHERS)
+        var1 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\A'
+        var2 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\B'
+        var3 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\C'
+        # init_program(path_app,global_vars_1)#test function
 
-    # 1. use this line when you run this program from pycharm
-    #observer.schedule(MyHandler(), path=WATCH_DIR, recursive=True)
+        print 'Starting async process 1'
+        one = pool.apply_async(Watcher, args=(False,var1))
+        time.sleep(1)
+        print 'Starting async process 2'
+        two = pool.apply_async(Watcher, args=(False,var2))
+        time.sleep(1)
+        print 'Starting async process 3'
+        three = pool.apply_async(Watcher, args=(False, var3))
 
-    # 2. use this line when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
-    ###arg in cmd: python main.py 'dir to watch'
-    ###e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
-    observer.schedule(MyHandler(), path=args[0] if args else '.', recursive=True)
+        one.get()
+        two.get()
+        three.get()
 
-    observer.start()
-    print 'watcher started'
+        pool.close()
+        pool.join()
+    else:
+        #if run from command line; argument is recursive folder
+        watcher = Watcher(cmd=USE_CMD)#recursive, uses argument
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
 
-    observer.join()
+
+
+
