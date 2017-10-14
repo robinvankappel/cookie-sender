@@ -100,11 +100,12 @@ class Watcher():
         observer.join()
 
 if __name__ == "__main__":
-    if PARALLEL_PROC:#todo: is this faster then separate started processes?
+    if PARALLEL_PROC:
         import multiprocessing as mp
         ##Multiprocessing: Process / Pool / Thread.
         # Using Pool:
         pool = mp.Pool(processes=WATCHERS)
+        # TODO: REWRITE THIS FUNCTION BASED ON WATCHERS CLASS (containing all info)
         var1 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\A'
         var2 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\B'
         var3 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\C'

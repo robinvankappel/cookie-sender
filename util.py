@@ -11,6 +11,7 @@ def get_time():
     time_str = ' (Time: ' + time_now + ') '
     return time_str
 
+"""
 def build_batch_to_run_watchers(watcher_file, watch_dir, n_watchers):
     batch_file = helpers_dir + 'run_script_to_get_lines-' + flop.flop + '.bat'
     if os.path.isfile(batch_file):
@@ -24,6 +25,7 @@ def build_batch_to_run_watchers(watcher_file, watch_dir, n_watchers):
         # print '\n'
         f.write(content)
     return batch_file
+"""
 
 class Compress():
     def __init__(self,json_content):
