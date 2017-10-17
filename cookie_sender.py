@@ -11,8 +11,6 @@ sys.path.append('D:\cookie')
 from config_sender import *
 from config_cookie import *
 
-##### ADDITIONAL PARAMETERS #####
-LOG_FILE = 'log_watcher.txt'
 
 class MyHandler(PatternMatchingEventHandler):
     patterns = ["*.txt"]
@@ -43,7 +41,7 @@ class MyHandler(PatternMatchingEventHandler):
             output = util.FileWriteIsDone(file,WATCH_DIR,timeout=120)
             if not output:
                 return
-            util.log_outputfiles(file, os.path.join(WATCH_DIR, LOG_FILE))
+            #util.log_outputfiles(file, os.path.join(WATCH_DIR, LOG_FILE))#todo: remove if not used in log
             print util.get_time(),"Start processing pio results"
 
             #convert pio results to json content
@@ -57,7 +55,7 @@ class MyHandler(PatternMatchingEventHandler):
             compressed_file = util.Compress(json_content)
             #compressed_file = util.compress(str(json_content))
             response = process.send_json(compressed_file, url)
-            success = util.log_response(file, os.path.join(WATCH_DIR,LOG_FILE), compressed_file.filesize, keys_length, pot_type, response)#todo: evaluate output
+            success = util.log_response(file, flop, stack_size, pot_type, LOG_FILE, compressed_file.filesize, keys_length, response)#todo: evaluate output
             success = 1 #todo: temp for testing...
             if success == 1:
                 # remove file

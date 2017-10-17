@@ -8,24 +8,8 @@ import os
 
 def get_time():
     time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    time_str = ' (Time: ' + time_now + ') '
+    time_str = ' (' + time_now + ') '
     return time_str
-
-"""
-def build_batch_to_run_watchers(watcher_file, watch_dir, n_watchers):
-    batch_file = helpers_dir + 'run_script_to_get_lines-' + flop.flop + '.bat'
-    if os.path.isfile(batch_file):
-        os.remove(batch_file)
-    with open(batch_file, 'w+') as f:
-        content = 'set root=' + PIO_DIR + '\n'
-        content += 'cd %root%' + '\n'
-        content += 'start /min ' + PIO_LOC + ' "' + pio_lines_file + '"\n'
-        # print 'Script for getting results of Pio'
-        # print content
-        # print '\n'
-        f.write(content)
-    return batch_file
-"""
 
 class Compress():
     def __init__(self,json_content):
@@ -84,35 +68,33 @@ class Result():
         self.pio_result = pio_result
         self.key = key
 
-def log_response(file,log_path, filesize, keys_length, pot_type, response=None):
+def log_response(file, flop, stack_size, pot_type, log_path, filesize, keys_length, response=None):
     filesize_per_key = round(filesize*1024/float(keys_length),0)
-    content = file
+    content = 'SENDER flop: ' + flop + ', ' + stack_size + 'BB, ' + pot_type + ' | file: ' + file + ', DB_filesize_total = ' + str(filesize) + 'MB, DB_filesize_per-key = ' + str(
+                filesize_per_key) + 'KB |'
     #write content
     if response == None:
-        content += ' (NO RESPONSE)'
+        content += ' FAILED: no response'
         print get_time(), 'NO RESPONSE'
         success = 0
     elif 'response.code' in locals():
         if response.code == 201:
-            content += ' (successfully sent to db[' + str(pot_type) + ']: response = 201'
-            content += ', DB_filesize_total = ' + str(filesize) + 'MB, DB_filesize_per-key = ' + str(
-                filesize_per_key) + 'KB'
+            content += ' Successfully sent to db: response = ' + str(response.code)
             success = 1
         else:
-            content += ' (FAILED sending to db[' + str(
-                pot_type) + ']:'  # todo: eval whether pot_type should be displayed
+            content += ' FAILED: wrong response from db: response = '
             success = 0
             if response == 404:
-                content += 'response = ' + str(response)
+                content += str(response) + '(Http error 404: not found)'
                 print get_time(), 'Http error 404: not found.'
             elif response.code == 403:
-                content += 'response = ' + str(response.code)
+                content += str(response.code) + '(sent package was empty)'
                 print get_time(), 'Error: sent package was empty'
             else:
                 print get_time(), 'Error: reponse code = ', str(response.code)
-                content += 'response = ' + str(response.code)
+                content += str(response.code)
 
-    content += ')' + get_time() + '\n'
+    content += get_time() + '\n'
     #write to external file
     with open(log_path, 'a') as f:
         print get_time(), 'logging: ' + content
