@@ -1,15 +1,15 @@
 #http://brunorocha.org/python/watching-a-directory-for-file-changes-with-python.html
 import time
 import sys
-import os
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import util
 import process
 import json
-
+sys.path.append('D:\cookie')
 ##### LOCAL PATHS #####
-from config_paths import *
+from config_sender import *
+from config_cookie import *
 
 ##### ADDITIONAL PARAMETERS #####
 LOG_FILE = 'log_watcher.txt'
@@ -57,7 +57,7 @@ class MyHandler(PatternMatchingEventHandler):
             compressed_file = util.Compress(json_content)
             #compressed_file = util.compress(str(json_content))
             response = process.send_json(compressed_file, url)
-            success = util.log_response(file, os.path.join(WATCH_DIR,LOG_FILE), compressed_file.filesize, keys_length, pot_type, response)#todo: evaluate
+            success = util.log_response(file, os.path.join(WATCH_DIR,LOG_FILE), compressed_file.filesize, keys_length, pot_type, response)#todo: evaluate output
             success = 1 #todo: temp for testing...
             if success == 1:
                 # remove file
@@ -76,7 +76,7 @@ class Watcher():
             use this when you run this program from pycharm
         If cmd = True:
             use this when you run this program via cmd: (alternatively run a batch file which activates multiple watchers)
-            arg in cmd: python main.py 'dir to watch'
+            arg in cmd: python cookie_sendercookie_sender.py 'dir to watch'
             e.g. dir to watch = C:/Users/J." "Moene/Desktop/CookieMonster_pythonfiles/db-filler/generated_scripts/OUTPUT_results/A
         """
         if not os.path.exists(watch_dir):
@@ -103,27 +103,17 @@ if __name__ == "__main__":
     if PARALLEL_PROC:
         import multiprocessing as mp
         ##Multiprocessing: Process / Pool / Thread.
+        watchers = Watchers(WATCHERS,WATCH_DIR)
         # Using Pool:
-        pool = mp.Pool(processes=WATCHERS)
-        # TODO: REWRITE THIS FUNCTION BASED ON WATCHERS CLASS (containing all info)
-        var1 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\A'
-        var2 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\B'
-        var3 = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\C'
-        # init_program(path_app,global_vars_1)#test function
-
-        print 'Starting async process 1'
-        one = pool.apply_async(Watcher, args=(False,var1))
-        time.sleep(1)
-        print 'Starting async process 2'
-        two = pool.apply_async(Watcher, args=(False,var2))
-        time.sleep(1)
-        print 'Starting async process 3'
-        three = pool.apply_async(Watcher, args=(False, var3))
-
-        one.get()
-        two.get()
-        three.get()
-
+        pool = mp.Pool(processes=watchers.number)
+        processes = list()
+        for i, folder in enumerate(watchers.paths):
+            print 'Starting async process ' + str(i+1)
+            p = pool.apply_async(Watcher, args=(False, folder))
+            processes.append(p)
+            time.sleep(0.1)
+        for p in processes:
+            p.get()
         pool.close()
         pool.join()
     else:

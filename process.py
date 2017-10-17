@@ -2,7 +2,7 @@ import urllib2
 import util
 import os
 ##### LOCAL PATHS #####
-from config_paths import *
+from config_sender import *
 
 def create_json(output, file):
     json_content = dict()
@@ -117,8 +117,8 @@ def splitfile(file):
         print "ERROR: 'END_OF_RESULTS' not found in output file > cannot process the file"
     pio_results = splitfile[0].split("is_ready ok!")[:-1]
     keys = splitfile[1] \
-               .split('KEYS START')[1] \
-               .split('KEYS END')[0] \
+               .split('KEYS_START')[1] \
+               .split('KEYS_END')[0] \
                .split("\n")[1:-1]
     pot_type = splitfile[1] \
                    .split('POT_TYPE')[1] \

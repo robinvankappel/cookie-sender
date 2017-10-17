@@ -1,8 +1,6 @@
 ##### SETTINGS GOOGLE INSTANCE ########
-WATCH_DIR = 'D:\\db-filler\\generated_scripts\\OUTPUT_results\\' #folder to watch
 PARALLEL_PROC = True #Processing with multiple watchers
-USE_CMD = True #Processing with one watcher, activated from command line: "python main.py 'folder-to-watch'"
-WATCHERS = 3
+USE_CMD = False #Processing with one watcher, activated from command line: "python cookie_sendercookie_sender.py 'folder-to-watch'"
 
 # ##### SETTINGS PC JELLE ########
 # JSON_DIR = 'C:\\Users\\J. Moene\\Desktop\\CookieMonster_pythonfiles\\generated_scripts\\json_files\\temp'
