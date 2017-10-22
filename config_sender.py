@@ -1,3 +1,9 @@
+import os.path, sys
+cwd = os.path.dirname(__file__)
+parentcwd = os.path.abspath(os.path.join(cwd, os.pardir))
+sys.path.append(parentcwd)
+from config_cookie import *
+
 ##### SETTINGS GOOGLE INSTANCE ########
 PARALLEL_PROC = True #Processing with multiple watchers
 USE_CMD = False #Processing with one watcher, activated from command line: "python cookie_sendercookie_sender.py 'folder-to-watch'"

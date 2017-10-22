@@ -6,10 +6,10 @@ from watchdog.events import PatternMatchingEventHandler
 import util
 import process
 import json
-sys.path.append('D:\cookie')
+#sys.path.append('D:\cookie')#todo; remove after thoroughly tested
 ##### LOCAL PATHS #####
 from config_sender import *
-from config_cookie import *
+#from config_cookie import * #todo; remove after thoroughly tested
 
 
 class MyHandler(PatternMatchingEventHandler):

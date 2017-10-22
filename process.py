@@ -36,8 +36,8 @@ def create_json(output, file):
 
         # key size check:
         keys_list.append(DB_key)
-    avg_keys, max_keys = averageLen(keys_list)
-
+    avg_keylength, max_keylength = averageLen(keys_list)
+    print util.get_time(), 'Avg key length: ' + str(avg_keylength)
     print util.get_time(), "json_content generated"
     return flop, json_content, pot_type, stack_size, len(keys)
 
@@ -49,13 +49,12 @@ def averageLen(lst):
         global MAX_LENGTH_TILL_NOW
         MAX_LENGTH_TILL_NOW = 0
     if max_length > MAX_LENGTH_TILL_NOW:
-        print 'Max key length: ' + str(max_length) + " --> key: " + str(lst[lengths.index(max_length)])
+        print util.get_time() + 'Max key length: ' + str(max_length) + " --> key: " + str(lst[lengths.index(max_length)])
         MAX_LENGTH_TILL_NOW = max_length
     if len(lengths) == 0:
         avg_length = 0
     else:
         avg_length = (float(sum(lengths)) / len(lengths))
-    print 'Avg key length: ' + str(avg_length)
     return avg_length, max_length
 
 
